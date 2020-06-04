@@ -66,7 +66,7 @@ function App() {
         (item)=>calculateFaceLocations(item.region_info.bounding_box,
             img.offsetHeight, img.offsetWidth)));
 
-      fetch('http://localhost:3000/update/',
+      fetch('https://sheltered-depths-20030.herokuapp.com/update/',
         {
           method: 'PUT',
           mode: 'cors',
