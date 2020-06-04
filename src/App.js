@@ -55,6 +55,7 @@ function App() {
       bottom: imgHeight - responseFromServer.bottom_row*imgHeight,
     }
   }
+  
 
   const onSearchClick = () =>
   {
