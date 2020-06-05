@@ -16,13 +16,7 @@ const NaviBar = (props) =>
                 <div>
                     <button className="b ma3 ph3 pv2 ba b--white white bg-transparent grow pointer f6 dib"
                         onClick={()=> {
-                            props.accountChange({
-                                id: '',
-                                name: '',
-                                email: '',
-                                count: 0,
-                                date: Date.parse('01 Jan 1970 00:00:00 GMT'),
-                            });
+                            props.accountChange(props.defaultUser);
                             props.changeRoute('Signin');
                             }}>Sign Out</button>
                 </div>

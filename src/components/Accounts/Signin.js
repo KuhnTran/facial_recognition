@@ -17,6 +17,7 @@ const Signin = (props) =>
 
     const onSubmitClick = () =>
     {
+        props.changeRoute('LoadingUser');
         fetch('https://sheltered-depths-20030.herokuapp.com/signin/',
             {
                 method: 'POST',
@@ -35,7 +36,10 @@ const Signin = (props) =>
                         props.accountChange(data.user);
                         props.changeRoute('Home');
                     }
-                    else console.log('failed login');
+                    else
+                    {
+                        props.changeRoute('Signin');
+                    } 
                 })
             .catch(err=> console.log(err));
         

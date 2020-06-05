@@ -21,26 +21,33 @@ const particleParam = {
   }
 }
 
+const defaultUser = {
+  id: '',
+  name: '',
+  email: '',
+  count: 0,
+  date: Date.parse('01 Jan 1970 00:00:00 GMT'),
+}
+
 function App() {
   const [input, setInput] = React.useState('');
   const [imageLink, setImageLink] = React.useState('');
   const [faces, setFaces] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState('Signin');
-  const [currentUser, setCurrentUser] = React.useState({
-    id: '',
-    name: '',
-    email: '',
-    count: 0,
-    date: Date.parse('01 Jan 1970 00:00:00 GMT'),
-  });
+  const [currentUser, setCurrentUser] = React.useState(defaultUser);
+
 
   const determineRoute = () =>
   {
     switch(currentPage)
     {
-      case 'Signin':
-        return (<Signin changeRoute={changeRoute}
-        accountChange={onAccountChange}/>); 
+      case 'Register': 
+        return (
+        <div>
+          <Register changeRoute={changeRoute}
+          accountChange={onAccountChange}/>
+        </div>);
+       
       case 'Home':
         return (<div>
             <Ranking currentUser={currentUser}/>
@@ -48,30 +55,39 @@ function App() {
               onSearchClick={onSearchClick}/>
             <ImageResult imageLink={imageLink} 
               faceLocations={faces}/>
-          </div>) 
-      default: 
+          </div>);
+
+      case 'LoadingUser':
         return (
-        <div>
-          <Register changeRoute={changeRoute}
-            accountChange={onAccountChange}/>
-        </div>);
+          <div className="flex center loadingio-spinner-eclipse-jgbwib07f6j">
+            <div className="ldio-ysbe80p474">
+              <div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return (<Signin changeRoute={changeRoute}
+        accountChange={onAccountChange}/>);
     }
   }
 
-  const onAccountChange = (newUser) =>
-  {
+  const changeRoute = (newRoute) => {
+    setCurrentPage(newRoute);
+  }
+
+  const onAccountChange = (newUser) => {
     setCurrentUser(newUser);
     setImageLink('');
     setFaces([]);
   }
 
-  const onInputChange = (event) =>
-  {
+  const onInputChange = (event) => {
     setInput(event.target.value);
   }
 
-  const calculateFaceLocations = (responseFromServer, imgHeight, imgWidth) =>
-  {
+  const calculateFaceLocations = (responseFromServer, imgHeight, imgWidth) => {
     return {
       left: responseFromServer.left_col*imgWidth,
       right: imgWidth - responseFromServer.right_col*imgWidth,
@@ -81,8 +97,7 @@ function App() {
   }
   
 
-  const onSearchClick = () =>
-  {
+  const onSearchClick = () => {
     setImageLink(input);
     app.models.predict(Clarifai.FACE_DETECT_MODEL, input)
     .then(response => {
@@ -112,17 +127,13 @@ function App() {
     });
   }
 
-  const changeRoute = (newRoute) =>
-  {
-    setCurrentPage(newRoute);
-  }
-
   return (
     <div>
       <Particles params={particleParam} className='particle'/>
       <NaviBar currentPage={currentPage} 
         changeRoute={changeRoute}
-        accountChange={onAccountChange}/>
+        accountChange={onAccountChange}
+        defaultUser={defaultUser}/>
       <BrainIcon/>
       {determineRoute()}
     </div>
