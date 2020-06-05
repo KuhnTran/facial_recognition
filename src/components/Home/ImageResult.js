@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './faceBoxes.css'
 const ImageResult = (props) =>
 {
+    useEffect(() => {
+        props.setProcessingImage(false);
+    });
+
     var i = 0;
     return(
         <div className='flex justify-center'>

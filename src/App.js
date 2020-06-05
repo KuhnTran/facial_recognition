@@ -10,6 +10,7 @@ import SearchBox from './components/Home/SearchBox.js';
 import ImageResult from './components/Home/ImageResult.js';
 import Signin from './components/Accounts/Signin.js';
 import Register from './components/Accounts/Register.js';
+import LoadingCircle from './components/General/LoadingCircle.js'
 
 const app = new Clarifai.App({apiKey: '78e31c188b5743be9e43f5e9ff672684'});
 
@@ -35,7 +36,7 @@ function App() {
   const [faces, setFaces] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState('Signin');
   const [currentUser, setCurrentUser] = React.useState(defaultUser);
-
+  const [processingImage, setProcessingImage] = React.useState(false);
 
   const determineRoute = () =>
   {
@@ -53,17 +54,17 @@ function App() {
             <Ranking currentUser={currentUser}/>
             <SearchBox onInputChange={onInputChange} 
               onSearchClick={onSearchClick}/>
+            {(processingImage) ? <div className="flex center">
+              <LoadingCircle/></div> : <div/>}
             <ImageResult imageLink={imageLink} 
-              faceLocations={faces}/>
+              faceLocations={faces}
+              setProcessingImage={setProcessingImage}/>
           </div>);
 
       case 'LoadingUser':
         return (
-          <div className="flex center loadingio-spinner-eclipse-jgbwib07f6j">
-            <div className="ldio-ysbe80p474">
-              <div>
-              </div>
-            </div>
+          <div className="flex center">
+              <LoadingCircle/>
           </div>
         );
 
@@ -98,7 +99,9 @@ function App() {
   
 
   const onSearchClick = () => {
+    setProcessingImage(true);
     setImageLink(input);
+    setFaces([]);
     app.models.predict(Clarifai.FACE_DETECT_MODEL, input)
     .then(response => {
       var img = document.getElementById('resultImg');
