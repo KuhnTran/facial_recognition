@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import 'tachyons'; 
-import Clarifai from 'clarifai';
 import Particles from 'react-particles-js';
 import NaviBar from './components/NaviBar.js';
 import BrainIcon from './components/BrainIcon.js';
@@ -12,8 +11,6 @@ import Signin from './components/Accounts/Signin.js';
 import Register from './components/Accounts/Register.js';
 import LoadingCircle from './components/General/LoadingCircle.js'
 
-const app = new Clarifai.App({apiKey: '78e31c188b5743be9e43f5e9ff672684'});
-
 const particleParam = {
   particles: {
     number: {
@@ -21,6 +18,8 @@ const particleParam = {
     }
   }
 }
+
+const backendAddress = 'https://sheltered-depths-20030.herokuapp.com/';
 
 const defaultUser = {
   id: '',
@@ -46,7 +45,8 @@ function App() {
         return (
         <div>
           <Register changeRoute={changeRoute}
-          accountChange={onAccountChange}/>
+          accountChange={onAccountChange}
+          backendAddress={backendAddress}/>
         </div>);
        
       case 'Home':
@@ -70,7 +70,8 @@ function App() {
 
       default:
         return (<Signin changeRoute={changeRoute}
-        accountChange={onAccountChange}/>);
+        accountChange={onAccountChange}
+        backendAddress={backendAddress}/>);
     }
   }
 
@@ -102,33 +103,35 @@ function App() {
     setProcessingImage(true);
     setImageLink(input);
     setFaces([]);
-    app.models.predict(Clarifai.FACE_DETECT_MODEL, input)
-    .then(response => {
-      var img = document.getElementById('resultImg');
-      setFaces(response.outputs[0].data.regions.map(
-        (item)=>calculateFaceLocations(item.region_info.bounding_box,
-            img.offsetHeight, img.offsetWidth)));
 
-      fetch('https://sheltered-depths-20030.herokuapp.com/update/',
-        {
-          method: 'PUT',
-          mode: 'cors',
-          cache: 'no-cache',
-          headers: { 'Content-Type':'application/JSON' },
-          body: JSON.stringify({id: currentUser.id}),
-        }).then(response=>response.json())
-        .then(data=>setCurrentUser(
+    fetch(backendAddress + 'update/',
+      {
+        method: 'PUT',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: { 'Content-Type':'application/JSON' },
+        body: JSON.stringify(
           {
-          ...currentUser,
-          count: data.newCount,
-          }
-        ))
-        .catch(error=>console.log(error));
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  }
+            id: currentUser.id,
+            imageLink: input,
+          }),
+      }).then(response=>response.json())
+      .then(data=>
+        {
+          var img = document.getElementById('resultImg');
+          setFaces(data.regions.map((item)=>
+              calculateFaceLocations(item.region_info.bounding_box,
+            img.offsetHeight, img.offsetWidth)));
+          setCurrentUser(
+            {
+              ...currentUser,
+              count: data.newCount,
+            })
+        }
+      )
+      .catch(error=>console.log(error));
+    }
+  
 
   return (
     <div>

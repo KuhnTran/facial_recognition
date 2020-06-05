@@ -31,7 +31,7 @@ const Register = (props) =>
     {
         if (password === confirm)
         {   
-            fetch('https://sheltered-depths-20030.herokuapp.com/register/',
+            fetch(props.backendAddress + 'register/',
                 {
                     method: 'POST',
                     mode: 'cors',
