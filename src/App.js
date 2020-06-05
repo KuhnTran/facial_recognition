@@ -34,6 +34,30 @@ function App() {
     date: Date.parse('01 Jan 1970 00:00:00 GMT'),
   });
 
+  const determineRoute = () =>
+  {
+    switch(currentPage)
+    {
+      case 'Signin':
+        return (<Signin changeRoute={changeRoute}
+        accountChange={onAccountChange}/>); 
+      case 'Home':
+        return (<div>
+            <Ranking currentUser={currentUser}/>
+            <SearchBox onInputChange={onInputChange} 
+              onSearchClick={onSearchClick}/>
+            <ImageResult imageLink={imageLink} 
+              faceLocations={faces}/>
+          </div>) 
+      default: 
+        return (
+        <div>
+          <Register changeRoute={changeRoute}
+            accountChange={onAccountChange}/>
+        </div>);
+    }
+  }
+
   const onAccountChange = (newUser) =>
   {
     setCurrentUser(newUser);
@@ -100,22 +124,7 @@ function App() {
         changeRoute={changeRoute}
         accountChange={onAccountChange}/>
       <BrainIcon/>
-      {(currentPage === 'Signin') ? 
-        <Signin changeRoute={changeRoute}
-          accountChange={onAccountChange}/> :
-          (currentPage ==='Home') ?
-            <div>
-              <Ranking currentUser={currentUser}/>
-              <SearchBox onInputChange={onInputChange} 
-                onSearchClick={onSearchClick}/>
-              <ImageResult imageLink={imageLink} 
-                faceLocations={faces}/>
-            </div> :
-          <div>
-            <Register changeRoute={changeRoute}
-              accountChange={onAccountChange}/>
-          </div>
-      }   
+      {determineRoute()}
     </div>
   
   );
